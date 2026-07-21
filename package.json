@@ -1,0 +1,14 @@
+{
+  "name": "recampus",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Monorepo do ReCampus - Marketplace de Economia Circular Universitaria (raiz apenas com scripts de conveniencia; backend e frontend sao projetos independentes)",
+  "scripts": {
+    "dev": "concurrently -n backend,frontend -c blue,magenta \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "install:all": "npm install --prefix backend && npm install --prefix frontend",
+    "build": "npm run build --prefix backend && npm run build --prefix frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

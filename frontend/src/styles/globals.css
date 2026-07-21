@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Tokens de cor em "R G B" (sem a função rgb()) para permitir que o Tailwind
+ * componha a opacidade via `rgb(var(--x) / <alpha-value>)` (ex: bg-primary/50).
+ * A troca de tema acontece só trocando a classe ".dark" no <html>
+ * (ver src/contexts/ThemeContext, Etapa 5) — nenhum componente precisa
+ * saber qual tema está ativo.
+ */
+:root {
+  --color-background: 255 255 255;
+  --color-foreground: 15 23 42;
+
+  --color-primary: 22 163 74;
+  --color-primary-foreground: 255 255 255;
+
+  --color-secondary: 13 148 136;
+  --color-secondary-foreground: 255 255 255;
+
+  --color-muted: 241 245 249;
+  --color-muted-foreground: 100 116 139;
+
+  --color-border: 226 232 240;
+
+  --color-success: 34 197 94;
+  --color-warning: 234 179 8;
+  --color-danger: 220 38 38;
+}
+
+.dark {
+  --color-background: 2 6 23;
+  --color-foreground: 241 245 249;
+
+  --color-primary: 74 222 128;
+  --color-primary-foreground: 2 6 23;
+
+  --color-secondary: 45 212 191;
+  --color-secondary-foreground: 2 6 23;
+
+  --color-muted: 30 41 59;
+  --color-muted-foreground: 148 163 184;
+
+  --color-border: 51 65 85;
+
+  --color-success: 74 222 128;
+  --color-warning: 250 204 21;
+  --color-danger: 248 113 113;
+}
+
+* {
+  border-color: rgb(var(--color-border));
+}
+
+body {
+  @apply bg-background text-foreground antialiased;
+}
