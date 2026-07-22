@@ -1,5 +1,4 @@
 import { LogOut } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/common/Button';
 import { useAuth } from '@/hooks/useAuth';
@@ -7,14 +6,19 @@ import { formatDate } from '@/utils/format';
 
 export function ProfilePage() {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
 
   if (!user) return null;
 
   async function handleLogout(): Promise<void> {
+    // Sem navigate() manual aqui de propósito: assim que user vira null,
+    // o ProtectedRoute (que já envolve /app/perfil) redireciona sozinho
+    // pra /login. Chamar navigate('/') aqui também cria uma corrida real
+    // entre duas atualizações de rota concorrentes - o resultado final
+    // dependia de timing (às vezes ficava em "/", às vezes voltava pra
+    // "/login" mesmo com o navigate rodando primeiro). Uma fonte de
+    // verdade só é mais simples e sempre previsível.
     await logout();
     toast.success('Você saiu da sua conta.');
-    navigate('/', { replace: true });
   }
 
   return (
