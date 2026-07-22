@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { Toaster } from '@/components/common/Toaster';
 import { AuthProvider } from '@/contexts/AuthProvider';
 import { ThemeProvider } from '@/contexts/ThemeProvider';
+import { usePwaUpdate } from '@/hooks/usePwaUpdate';
 import { AppRouter } from '@/routes/AppRouter';
 
 const queryClient = new QueryClient({
@@ -15,6 +16,8 @@ const queryClient = new QueryClient({
 });
 
 export function App() {
+  usePwaUpdate();
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
