@@ -28,6 +28,10 @@ export function createApp(): Express {
   app.use(express.json());
   app.use(morgan(isProduction ? 'combined' : 'dev'));
 
+  app.get('/health', (_req, res) => {
+    res.status(200).json({ status: 'ok' });
+  });
+
   app.use(createRateLimiter(env.RATE_LIMIT_MAX));
 
   app.use('/api/v1', router);
