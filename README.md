@@ -295,17 +295,28 @@ docker compose up -d --build backend
 
 ## Deploy
 
-Preparado para os seguintes alvos (instruções para quando o deploy for feito):
+Aplicação em produção:
 
-- **Backend → [Render](https://render.com)**: Web Service apontando pra pasta `backend/`
-  (ou usando o `Dockerfile` incluso), build command `npm install && npm run build`, start
-  command `npm start`, variáveis de ambiente conforme a tabela acima com `DATABASE_URL` do
-  Supabase.
-- **Frontend → [Vercel](https://vercel.com)**: root directory `frontend/`, framework preset
-  Vite, variável `VITE_API_URL` apontando pra URL pública do backend no Render.
-- **Banco → [Supabase](https://supabase.com)** PostgreSQL: criar projeto, copiar a connection
-  string (usar a versão com *connection pooling* se o backend rodar em ambiente serverless) para
-  `DATABASE_URL`.
+- **Frontend**: https://recampus-seven.vercel.app
+- **Backend (health check)**: https://recampus-api.onrender.com/health
+- **Repositório**: https://github.com/Viniciusz11/recampus
+
+Login de teste: `ana@recampus.dev` ou `bruno@recampus.dev`, senha `senha123`.
+
+Stack de deploy:
+
+- **Backend → [Render](https://render.com)**: Web Service via `render.yaml` (Blueprint), build
+  usando o `Dockerfile` multi-stage de `backend/`. Segredos (`DATABASE_URL`, `DIRECT_URL`,
+  `JWT_SECRET`, `REFRESH_TOKEN_SECRET`, `CORS_ORIGIN`) preenchidos manualmente no dashboard, nunca
+  commitados (`sync: false` no blueprint).
+- **Frontend → [Vercel](https://vercel.com)**: root directory `frontend/`, framework preset Vite,
+  variável `VITE_API_URL` apontando pra URL pública do backend no Render. Um `vercel.json` com
+  rewrite de SPA (`/(.*) → /index.html`) é necessário — sem ele, qualquer rota do React Router
+  que não seja a raiz retorna 404 em acesso direto ou F5.
+- **Banco → [Supabase](https://supabase.com)** PostgreSQL: connection pooler em modo *transaction*
+  (`DATABASE_URL`, porta 6543, `?pgbouncer=true`) para o runtime da aplicação, e conexão direta em
+  modo *session* (`DIRECT_URL`, porta 5432) para o Prisma rodar migrations — o modo transaction não
+  suporta os prepared statements que as migrations exigem.
 
 ## Melhorias futuras
 
