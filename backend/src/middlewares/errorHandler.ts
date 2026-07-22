@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
+import { MulterError } from 'multer';
 import { ZodError } from 'zod';
 import { AppError } from '@/utils/AppError';
 import { isProduction } from '@/config/env';
@@ -30,6 +31,13 @@ export function errorHandler(
         details: err.flatten().fieldErrors,
       },
     });
+    return;
+  }
+
+  if (err instanceof MulterError) {
+    const message =
+      err.code === 'LIMIT_FILE_SIZE' ? 'Imagem muito grande (máximo 5MB)' : 'Falha ao processar o arquivo enviado';
+    res.status(400).json({ error: { message, code: err.code } });
     return;
   }
 

@@ -8,9 +8,8 @@ semestre acaba.
 Projeto desenvolvido para o desafio técnico do processo seletivo de estágio Full-Stack do
 **Laboratório de Inovação Vortex (UNIFOR)**, 2026.
 
-> **Diário de Bordo da IA** (exigido no edital) está na [última seção deste README](#diário-de-bordo-da-ia).
+> **Diário de Bordo da IA** está na [última seção deste README](#diário-de-bordo-da-ia).
 
----
 
 ## Índice
 
@@ -86,6 +85,7 @@ lib de estado global adicional seria redundante para o tamanho deste projeto.
 | Framework HTTP | Express 5 |
 | ORM / Banco | Prisma ORM + PostgreSQL |
 | Autenticação | JWT (access token) + refresh token rotativo em cookie httpOnly, bcrypt |
+| Upload de imagem | Multer (multipart/form-data) + Supabase Storage |
 | Validação | Zod |
 | Segurança | Helmet, CORS, express-rate-limit |
 | Qualidade | ESLint 10 (flat config) + regras do React Compiler, Prettier, TypeScript strict |
@@ -113,6 +113,7 @@ lib de estado global adicional seria redundante para o tamanho deste projeto.
 | Deploy backend | Render |
 | Deploy frontend | Vercel |
 | Banco em produção | Supabase PostgreSQL |
+| Storage de imagens | Supabase Storage (bucket público `ad-images`) |
 
 ## Estrutura de pastas
 
@@ -260,6 +261,9 @@ docker compose up -d --build backend
 | `REFRESH_TOKEN_SECRET` | Segredo do refresh token — **diferente** do `JWT_SECRET` |
 | `REFRESH_TOKEN_EXPIRES_IN` | Validade do refresh token (padrão `7d`) |
 | `CORS_ORIGIN` | Origem exata autorizada a fazer requisições com cookies |
+| `SUPABASE_URL` | URL do projeto Supabase (`https://<ref>.supabase.co`) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Chave `service_role` do Supabase — server-only, nunca no frontend |
+| `SUPABASE_STORAGE_BUCKET` | Bucket público de imagens dos anúncios (padrão `ad-images`) |
 | `RATE_LIMIT_WINDOW_MS` / `RATE_LIMIT_MAX` | Janela e limite do rate limit global |
 | `AUTH_RATE_LIMIT_MAX` | Limite específico pras rotas de autenticação |
 
@@ -324,7 +328,6 @@ Stack de deploy:
   desenhada pensando nisso — e testes e2e nas rotas).
 - Busca full-text real (`pg_trgm` + índice GIN) em vez de `ILIKE` simples, se o volume de
   anúncios crescer.
-- Upload real de imagem (S3/Cloudinary) em vez de URL simulada.
 - Soft delete em vez de exclusão física, se histórico de anúncios remove for necessário.
 - CI (lint + typecheck + build a cada push).
 - Chat ou campo de contato entre comprador e anunciante.

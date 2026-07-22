@@ -1,9 +1,11 @@
 import { prisma } from '@/config/prisma';
+import { supabaseStorage } from '@/config/supabaseStorage';
 import { PrismaAdRepository } from '@/repositories/ad.repository';
 import { PrismaRefreshTokenRepository } from '@/repositories/refresh-token.repository';
 import { PrismaUserRepository } from '@/repositories/user.repository';
 import { AdService } from '@/services/ad.service';
 import { AuthService } from '@/services/auth.service';
+import { UploadService } from '@/services/upload.service';
 import { UserService } from '@/services/user.service';
 
 /**
@@ -20,3 +22,4 @@ const refreshTokenRepository = new PrismaRefreshTokenRepository(prisma);
 export const userService = new UserService(userRepository);
 export const adService = new AdService(adRepository);
 export const authService = new AuthService(userRepository, refreshTokenRepository);
+export const uploadService = new UploadService(supabaseStorage);

@@ -14,6 +14,10 @@ const envSchema = z.object({
 
   CORS_ORIGIN: z.string().min(1, 'CORS_ORIGIN e obrigatoria'),
 
+  SUPABASE_URL: z.string().min(1, 'SUPABASE_URL e obrigatoria'),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, 'SUPABASE_SERVICE_ROLE_KEY e obrigatoria'),
+  SUPABASE_STORAGE_BUCKET: z.string().default('ad-images'),
+
   RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(900_000),
   RATE_LIMIT_MAX: z.coerce.number().int().positive().default(100),
   AUTH_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(10),

@@ -5,6 +5,7 @@ import { authGuard } from '@/middlewares/authGuard';
 import { validate } from '@/middlewares/validate';
 import { adRoutes } from '@/routes/ad.routes';
 import { authRoutes } from '@/routes/auth.routes';
+import { uploadRoutes } from '@/routes/upload.routes';
 import { listMyAdsQuerySchema } from '@/schemas/ad.schemas';
 
 export const router = Router();
@@ -15,6 +16,7 @@ router.get('/health', (_req, res) => {
 });
 
 router.use('/auth', authRoutes);
+router.use('/uploads', uploadRoutes);
 
 // /me e /my-ads ficam no nível raiz (não sob /auth ou /ads) para bater
 // exatamente com os endpoints exigidos no edital.
