@@ -1,0 +1,53 @@
+# Só backend + banco. O frontend é uma SPA estática (Vite build) - não faz
+# sentido containerizar algo que vai virar um punhado de arquivos servidos
+# por um CDN (Vercel/Netlify), então ele roda direto com `npm run dev`.
+#
+# Migração de schema é um passo manual e explícito (ver README), não algo
+# que o container roda sozinho no boot: se o backend algum dia escalar para
+# várias réplicas, todas migrando ao mesmo tempo no start seria uma corrida
+# de schema esperando pra acontecer.
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: recampus
+      POSTGRES_PASSWORD: recampus
+      POSTGRES_DB: recampus
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U recampus -d recampus']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    # Valores abaixo são segredos de DESENVOLVIMENTO LOCAL apenas - nunca são
+    # usados em produção (lá, o Render injeta as variáveis reais). Trocar
+    # esses valores aqui não afeta nada além do seu docker-compose local.
+    environment:
+      NODE_ENV: development
+      PORT: 3333
+      DATABASE_URL: postgresql://recampus:recampus@postgres:5432/recampus?schema=public
+      JWT_SECRET: dev-only-jwt-secret-troque-antes-de-produção-0123456789
+      JWT_EXPIRES_IN: 15m
+      REFRESH_TOKEN_SECRET: dev-only-refresh-secret-troque-antes-de-produção-0123456789
+      REFRESH_TOKEN_EXPIRES_IN: 7d
+      CORS_ORIGIN: http://localhost:5173
+      RATE_LIMIT_WINDOW_MS: 900000
+      RATE_LIMIT_MAX: 100
+      AUTH_RATE_LIMIT_MAX: 10
+    ports:
+      - '3333:3333'
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
