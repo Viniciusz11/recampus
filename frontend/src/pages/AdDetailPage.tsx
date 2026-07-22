@@ -4,8 +4,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { AdStatusBadge } from '@/components/ads/AdStatusBadge';
 import { Button } from '@/components/common/Button';
+import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { ErrorState } from '@/components/common/ErrorState';
-import { Modal } from '@/components/common/Modal';
 import { Skeleton } from '@/components/common/Skeleton';
 import { useDeleteAdMutation } from '@/hooks/useAdMutations';
 import { useAdQuery } from '@/hooks/useAds';
@@ -112,23 +112,15 @@ export function AdDetailPage() {
         </div>
       )}
 
-      <Modal isOpen={isConfirmOpen} onClose={() => setIsConfirmOpen(false)} title="Excluir anúncio">
-        <p className="text-sm text-muted-foreground">
-          Tem certeza que deseja excluir &quot;{ad.title}&quot;? Essa ação não pode ser desfeita.
-        </p>
-        <div className="mt-6 flex justify-end gap-3">
-          <Button variant="outline" onClick={() => setIsConfirmOpen(false)}>
-            Cancelar
-          </Button>
-          <Button
-            variant="danger"
-            isLoading={deleteAdMutation.isPending}
-            onClick={() => void handleDelete()}
-          >
-            Excluir
-          </Button>
-        </div>
-      </Modal>
+      <ConfirmDialog
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={() => void handleDelete()}
+        title="Excluir anúncio"
+        message={`Tem certeza que deseja excluir "${ad.title}"? Essa ação não pode ser desfeita.`}
+        confirmLabel="Excluir"
+        isLoading={deleteAdMutation.isPending}
+      />
     </div>
   );
 }

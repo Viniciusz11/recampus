@@ -4,13 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { AdGrid } from '@/components/ads/AdGrid';
 import { Button } from '@/components/common/Button';
-import { Modal } from '@/components/common/Modal';
+import { Chip } from '@/components/common/Chip';
+import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { Pagination } from '@/components/common/Pagination';
 import { useDeleteAdMutation } from '@/hooks/useAdMutations';
 import { useMyAdsQuery } from '@/hooks/useAds';
 import type { Ad, AdStatus } from '@/types/ad';
 import { AD_STATUS_LABELS } from '@/utils/adMeta';
-import { cn } from '@/utils/cn';
 import { getErrorMessage } from '@/utils/errors';
 
 interface StatusTab {
@@ -64,22 +64,16 @@ export function MyAdsPage() {
 
       <div className="mt-6 flex flex-wrap gap-2">
         {STATUS_TABS.map((tab) => (
-          <button
+          <Chip
             key={tab.value}
-            type="button"
+            active={status === tab.value}
             onClick={() => {
               setStatus(tab.value);
               setPage(1);
             }}
-            className={cn(
-              'rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors',
-              status === tab.value
-                ? 'border-primary bg-primary text-primary-foreground'
-                : 'border-border text-muted-foreground hover:bg-muted',
-            )}
           >
             {tab.label}
-          </button>
+          </Chip>
         ))}
       </div>
 
@@ -119,23 +113,15 @@ export function MyAdsPage() {
         <Pagination page={page} totalPages={data.meta.totalPages} onChange={setPage} />
       )}
 
-      <Modal isOpen={Boolean(adToDelete)} onClose={() => setAdToDelete(null)} title="Excluir anúncio">
-        <p className="text-sm text-muted-foreground">
-          Tem certeza que deseja excluir &quot;{adToDelete?.title}&quot;?
-        </p>
-        <div className="mt-6 flex justify-end gap-3">
-          <Button variant="outline" onClick={() => setAdToDelete(null)}>
-            Cancelar
-          </Button>
-          <Button
-            variant="danger"
-            isLoading={deleteAdMutation.isPending}
-            onClick={() => void handleConfirmDelete()}
-          >
-            Excluir
-          </Button>
-        </div>
-      </Modal>
+      <ConfirmDialog
+        isOpen={Boolean(adToDelete)}
+        onClose={() => setAdToDelete(null)}
+        onConfirm={() => void handleConfirmDelete()}
+        title="Excluir anúncio"
+        message={`Tem certeza que deseja excluir "${adToDelete?.title}"? Essa ação não pode ser desfeita.`}
+        confirmLabel="Excluir"
+        isLoading={deleteAdMutation.isPending}
+      />
     </div>
   );
 }

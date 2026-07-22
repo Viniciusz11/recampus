@@ -1,8 +1,8 @@
 import { Search } from 'lucide-react';
+import { Chip } from '@/components/common/Chip';
 import { Input } from '@/components/common/Input';
 import type { AdFiltersState, Category } from '@/types/ad';
 import { CATEGORY_META } from '@/utils/adMeta';
-import { cn } from '@/utils/cn';
 
 interface AdFiltersBarProps {
   filters: AdFiltersState;
@@ -38,36 +38,20 @@ export function AdFiltersBar({ filters, onChange, showSearch = true }: AdFilters
       )}
 
       <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={() => onChange({ ...filters, category: undefined })}
-          className={cn(
-            'rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors',
-            !filters.category
-              ? 'border-primary bg-primary text-primary-foreground'
-              : 'border-border text-muted-foreground hover:bg-muted',
-          )}
-        >
+        <Chip active={!filters.category} onClick={() => onChange({ ...filters, category: undefined })}>
           Todas
-        </button>
+        </Chip>
         {CATEGORY_ENTRIES.map(([category, meta]) => {
           const Icon = meta.icon;
-          const isActive = filters.category === category;
           return (
-            <button
+            <Chip
               key={category}
-              type="button"
+              active={filters.category === category}
+              icon={<Icon className="h-3.5 w-3.5" aria-hidden="true" />}
               onClick={() => toggleCategory(category)}
-              className={cn(
-                'flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors',
-                isActive
-                  ? 'border-primary bg-primary text-primary-foreground'
-                  : 'border-border text-muted-foreground hover:bg-muted',
-              )}
             >
-              <Icon className="h-3.5 w-3.5" aria-hidden="true" />
               {meta.label}
-            </button>
+            </Chip>
           );
         })}
       </div>

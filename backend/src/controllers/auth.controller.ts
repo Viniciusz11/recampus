@@ -28,11 +28,14 @@ function clearRefreshCookie(res: Response): void {
   res.clearCookie(REFRESH_COOKIE_NAME, { path: REFRESH_COOKIE_PATH });
 }
 
-function readRefreshCookie(req: Request): string {
+function getRefreshCookieValue(req: Request): string | undefined {
   const raw: unknown = (req.cookies as Record<string, unknown> | undefined)?.[REFRESH_COOKIE_NAME];
-  if (typeof raw !== 'string' || raw.length === 0) {
-    throw AppError.unauthorized('Refresh token não informado');
-  }
+  return typeof raw === 'string' && raw.length > 0 ? raw : undefined;
+}
+
+function readRefreshCookie(req: Request): string {
+  const raw = getRefreshCookieValue(req);
+  if (!raw) throw AppError.unauthorized('Refresh token não informado');
   return raw;
 }
 
@@ -63,8 +66,8 @@ const refresh = async (req: Request, res: Response): Promise<void> => {
 };
 
 const logout = async (req: Request, res: Response): Promise<void> => {
-  const raw: unknown = (req.cookies as Record<string, unknown> | undefined)?.[REFRESH_COOKIE_NAME];
-  if (typeof raw === 'string' && raw.length > 0) {
+  const raw = getRefreshCookieValue(req);
+  if (raw) {
     await authService.logout(raw);
   }
   clearRefreshCookie(res);

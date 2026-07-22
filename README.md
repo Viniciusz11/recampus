@@ -309,8 +309,6 @@ Preparado para os seguintes alvos (instruções para quando o deploy for feito):
 
 ## Melhorias futuras
 
-- Code-splitting por rota (`React.lazy`) — o bundle de produção já está funcional mas passou de
-  500kB; o Vite já avisa isso no build.
 - Testes automatizados (unitários em `services` com repositórios fake — a arquitetura já foi
   desenhada pensando nisso — e testes e2e nas rotas).
 - Busca full-text real (`pg_trgm` + índice GIN) em vez de `ILIKE` simples, se o volume de
