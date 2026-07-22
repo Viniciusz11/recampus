@@ -14,10 +14,10 @@ export default tseslint.config(
     languageOptions: { globals: globals.node },
   },
   {
-    // Lint com type-checking completo só nas fontes do projeto (precisam
-    // estar no tsconfig). Arquivos de config na raiz (este próprio arquivo,
-    // por exemplo) usam apenas as regras não tipadas abaixo.
-    files: ['src/**/*.ts'],
+    // Lint com type-checking completo nos arquivos cobertos pelo
+    // tsconfig.json (src/, prisma/, prisma.config.ts). Configs .js/.mjs na
+    // raiz (este próprio arquivo, por exemplo) usam só as regras acima.
+    files: ['src/**/*.ts', 'prisma/**/*.ts', 'prisma.config.ts'],
     extends: [...tseslint.configs.recommendedTypeChecked],
     languageOptions: {
       parserOptions: {

@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+/// Categoria do item anunciado. Modelada como enum (não string livre) porque
+/// é um vocabulário fechado usado tanto para os filtros da landing page
+/// quanto para validação no backend — um enum garante que nunca existirá um
+/// anúncio com categoria inválida ou grafada de forma diferente no banco.
+enum Category {
+  BOOKS // Livros
+  CALCULATORS // Calculadoras científicas
+  ELECTRONICS // Componentes eletrônicos
+  LAB_COATS // Jalecos
+  FURNITURE // Móveis
+  PHOTOCOPIES // Xerox / apostilas
+  LAB_MATERIALS // Materiais de laboratório
+  OTHER // Outros
+}
+
+/// Tipo do anúncio. Determina a regra de negócio sobre o campo `price`
+/// (aplicada na camada de serviço, não no banco — ver Ad.price).
+enum AdType {
+  DONATION
+  SALE
+}
+
+/// Ciclo de vida do anúncio.
+enum AdStatus {
+  ACTIVE
+  RESERVED
+  SOLD
+}
+
+// ---------------------------------------------------------------------------
+// Models
+// ---------------------------------------------------------------------------
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String
+  email        String   @unique
+  passwordHash String
+  avatarUrl    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  ads           Ad[]
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model Ad {
+  id          String   @id @default(uuid()) @db.Uuid
+  title       String
+  description String
+  category    Category
+  type        AdType
+
+  /// Decimal (não Float): preço é dinheiro, e Float sofre erro de
+  /// arredondamento binário (0.1 + 0.2 !== 0.3). Nulo quando type = DONATION;
+  /// obrigatório e > 0 quando type = SALE — regra validada no service
+  /// (AdService), não como CHECK constraint, para manter a lógica de negócio
+  /// visível e testável na camada de aplicação em vez de espalhada no schema.
+  price Decimal? @db.Decimal(10, 2)
+
+  imageUrl  String
+  status    AdStatus @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId String @db.Uuid
+
+  // Índices alinhados com os padrões de acesso reais: listar por categoria,
+  // filtrar por status (ex: só ACTIVE na vitrine pública) e buscar "meus
+  // anúncios" por dono.
+  @@index([category])
+  @@index([status])
+  @@index([ownerId])
+  @@map("ads")
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  /// Nunca guardamos o refresh token em texto puro — só o hash (sha256).
+  /// Se o banco vazar, os tokens não são reutilizáveis diretamente.
+  tokenHash String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @db.Uuid
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
