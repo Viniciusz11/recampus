@@ -313,7 +313,6 @@ Preparado para os seguintes alvos (instruções para quando o deploy for feito):
   desenhada pensando nisso — e testes e2e nas rotas).
 - Busca full-text real (`pg_trgm` + índice GIN) em vez de `ILIKE` simples, se o volume de
   anúncios crescer.
-- Rate limit dedicado e mais agressivo em `/auth/login` (hoje usa o limite global).
 - Upload real de imagem (S3/Cloudinary) em vez de URL simulada.
 - Soft delete em vez de exclusão física, se histórico de anúncios remove for necessário.
 - CI (lint + typecheck + build a cada push).

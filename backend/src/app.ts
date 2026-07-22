@@ -3,9 +3,9 @@ import helmet from 'helmet';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
-import rateLimit from 'express-rate-limit';
 import { env, isProduction } from '@/config/env';
 import { router } from '@/routes';
+import { createRateLimiter } from '@/middlewares/rateLimiter';
 import { notFoundHandler } from '@/middlewares/notFoundHandler';
 import { errorHandler } from '@/middlewares/errorHandler';
 
@@ -28,14 +28,7 @@ export function createApp(): Express {
   app.use(express.json());
   app.use(morgan(isProduction ? 'combined' : 'dev'));
 
-  app.use(
-    rateLimit({
-      windowMs: env.RATE_LIMIT_WINDOW_MS,
-      limit: env.RATE_LIMIT_MAX,
-      standardHeaders: true,
-      legacyHeaders: false,
-    }),
-  );
+  app.use(createRateLimiter(env.RATE_LIMIT_MAX));
 
   app.use('/api/v1', router);
 
