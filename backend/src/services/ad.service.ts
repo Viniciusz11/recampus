@@ -1,5 +1,5 @@
-import { AdType, type Ad } from '@prisma/client';
-import type { AdFilters, AdRepository, UpdateAdData } from '@/repositories/ad.repository';
+import { AdType } from '@prisma/client';
+import type { AdFilters, AdRepository, AdWithOwner, UpdateAdData } from '@/repositories/ad.repository';
 import type { CreateAdInput, UpdateAdInput } from '@/schemas/ad.schemas';
 import { AppError } from '@/utils/AppError';
 import { buildPaginatedResult, type PaginatedResult } from '@/utils/pagination';
@@ -28,7 +28,7 @@ function assertValidPricing(type: AdType, price: number | null): void {
 export class AdService {
   constructor(private readonly adRepository: AdRepository) {}
 
-  async list({ filters, page, limit }: ListAdsParams): Promise<PaginatedResult<Ad>> {
+  async list({ filters, page, limit }: ListAdsParams): Promise<PaginatedResult<AdWithOwner>> {
     const { items, total } = await this.adRepository.findMany({
       filters,
       skip: (page - 1) * limit,
@@ -38,13 +38,13 @@ export class AdService {
     return buildPaginatedResult(items, total, { page, limit });
   }
 
-  async getById(id: string): Promise<Ad> {
+  async getById(id: string): Promise<AdWithOwner> {
     const ad = await this.adRepository.findById(id);
     if (!ad) throw AppError.notFound('Anúncio não encontrado');
     return ad;
   }
 
-  async create(ownerId: string, input: CreateAdInput): Promise<Ad> {
+  async create(ownerId: string, input: CreateAdInput): Promise<AdWithOwner> {
     const price = input.price ?? null;
     assertValidPricing(input.type, price);
 
@@ -59,7 +59,7 @@ export class AdService {
     });
   }
 
-  async update(id: string, ownerId: string, input: UpdateAdInput): Promise<Ad> {
+  async update(id: string, ownerId: string, input: UpdateAdInput): Promise<AdWithOwner> {
     const ad = await this.getById(id);
     this.assertOwnership(ad, ownerId);
 
@@ -81,7 +81,7 @@ export class AdService {
     await this.adRepository.delete(id);
   }
 
-  private assertOwnership(ad: Ad, ownerId: string): void {
+  private assertOwnership(ad: AdWithOwner, ownerId: string): void {
     if (ad.ownerId !== ownerId) {
       throw AppError.forbidden('Você não tem permissão para alterar este anúncio');
     }

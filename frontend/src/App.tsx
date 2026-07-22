@@ -1,16 +1,30 @@
-/**
- * Placeholder de verificação do toolchain (Vite + React + Tailwind + tema).
- * Substituído pelo roteador real (React Router + AppShell/Landing) na Etapa 5.
- */
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter } from 'react-router-dom';
+import { Toaster } from '@/components/common/Toaster';
+import { AuthProvider } from '@/contexts/AuthProvider';
+import { ThemeProvider } from '@/contexts/ThemeProvider';
+import { AppRouter } from '@/routes/AppRouter';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      retry: 1,
+    },
+  },
+});
+
 export function App() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background text-foreground">
-      <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold text-primary">ReCampus</h1>
-        <p className="text-muted-foreground">
-          Toolchain do frontend configurado. Rotas chegam na Etapa 5.
-        </p>
-      </div>
-    </main>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <AppRouter />
+            <Toaster />
+          </BrowserRouter>
+        </AuthProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }

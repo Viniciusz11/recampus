@@ -1,4 +1,13 @@
-import type { Ad, AdStatus, AdType, Category, Prisma, PrismaClient } from '@prisma/client';
+import type { AdStatus, AdType, Category, Prisma, PrismaClient } from '@prisma/client';
+
+// Toda leitura de anúncio traz o nome do dono junto (1 join) - a UI sempre
+// precisa mostrar "anunciado por X", então incluir isso aqui evita repetir
+// o `include` em cada método e evita uma segunda consulta no controller.
+const adWithOwnerArgs = {
+  include: { owner: { select: { id: true, name: true } } },
+} satisfies Prisma.AdDefaultArgs;
+
+export type AdWithOwner = Prisma.AdGetPayload<typeof adWithOwnerArgs>;
 
 export interface AdFilters {
   category?: Category;
@@ -35,10 +44,10 @@ export interface UpdateAdData {
 }
 
 export interface AdRepository {
-  findMany(params: FindManyParams): Promise<{ items: Ad[]; total: number }>;
-  findById(id: string): Promise<Ad | null>;
-  create(data: CreateAdData): Promise<Ad>;
-  update(id: string, data: UpdateAdData): Promise<Ad>;
+  findMany(params: FindManyParams): Promise<{ items: AdWithOwner[]; total: number }>;
+  findById(id: string): Promise<AdWithOwner | null>;
+  create(data: CreateAdData): Promise<AdWithOwner>;
+  update(id: string, data: UpdateAdData): Promise<AdWithOwner>;
   delete(id: string): Promise<void>;
 }
 
@@ -63,29 +72,33 @@ function buildWhere(filters: AdFilters): Prisma.AdWhereInput {
 export class PrismaAdRepository implements AdRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async findMany({ filters, skip, take }: FindManyParams): Promise<{ items: Ad[]; total: number }> {
+  async findMany({
+    filters,
+    skip,
+    take,
+  }: FindManyParams): Promise<{ items: AdWithOwner[]; total: number }> {
     const where = buildWhere(filters);
 
     // $transaction garante que a página de itens e o total contado batem
     // com o mesmo snapshot dos dados, mesmo sob escritas concorrentes.
     const [items, total] = await this.prisma.$transaction([
-      this.prisma.ad.findMany({ where, skip, take, orderBy: { createdAt: 'desc' } }),
+      this.prisma.ad.findMany({ where, skip, take, orderBy: { createdAt: 'desc' }, ...adWithOwnerArgs }),
       this.prisma.ad.count({ where }),
     ]);
 
     return { items, total };
   }
 
-  findById(id: string): Promise<Ad | null> {
-    return this.prisma.ad.findUnique({ where: { id } });
+  findById(id: string): Promise<AdWithOwner | null> {
+    return this.prisma.ad.findUnique({ where: { id }, ...adWithOwnerArgs });
   }
 
-  create(data: CreateAdData): Promise<Ad> {
-    return this.prisma.ad.create({ data });
+  create(data: CreateAdData): Promise<AdWithOwner> {
+    return this.prisma.ad.create({ data, ...adWithOwnerArgs });
   }
 
-  update(id: string, data: UpdateAdData): Promise<Ad> {
-    return this.prisma.ad.update({ where: { id }, data });
+  update(id: string, data: UpdateAdData): Promise<AdWithOwner> {
+    return this.prisma.ad.update({ where: { id }, data, ...adWithOwnerArgs });
   }
 
   async delete(id: string): Promise<void> {
