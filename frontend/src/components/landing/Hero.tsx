@@ -19,7 +19,7 @@ export function Hero() {
           transition={{ duration: 0.4 }}
           className="rounded-full border border-border bg-muted px-4 py-1.5 text-sm font-medium text-muted-foreground"
         >
-          Economia circular dentro do seu campus
+          Economize e circule no campus
         </motion.span>
 
         <motion.h1
