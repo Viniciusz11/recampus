@@ -5,9 +5,13 @@ import { Button } from '@/components/common/Button';
 import { ThemeToggle } from '@/components/common/ThemeToggle';
 import { useAuth } from '@/hooks/useAuth';
 
+// Caminho completo (com "/") mesmo pras âncoras da landing: como o link pode
+// ser clicado de qualquer rota (ex: de /anuncios), precisa navegar pra "/"
+// antes de rolar até a seção - um "#categorias" sozinho só rolaria a página
+// atual, que não tem essa seção fora da landing.
 const NAV_LINKS = [
-  { label: 'Como funciona', href: '#como-funciona' },
-  { label: 'Categorias', href: '#categorias' },
+  { label: 'Como funciona', href: '/#como-funciona' },
+  { label: 'Categorias', href: '/#categorias' },
   { label: 'Anúncios', href: '/anuncios' },
 ];
 
@@ -26,13 +30,13 @@ export function Navbar() {
 
         <div className="hidden items-center gap-6 md:flex">
           {NAV_LINKS.map((link) => (
-            <a
+            <Link
               key={link.href}
-              href={link.href}
+              to={link.href}
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </div>
 
@@ -67,14 +71,14 @@ export function Navbar() {
       {isMenuOpen && (
         <div className="flex flex-col gap-1 border-t border-border px-4 py-4 md:hidden">
           {NAV_LINKS.map((link) => (
-            <a
+            <Link
               key={link.href}
-              href={link.href}
+              to={link.href}
               onClick={() => setIsMenuOpen(false)}
               className="rounded-lg px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
           <div className="mt-2 flex items-center gap-3 px-3">
             <ThemeToggle />
