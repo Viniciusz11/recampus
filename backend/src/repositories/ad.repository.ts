@@ -4,7 +4,7 @@ import type { AdStatus, AdType, Category, Prisma, PrismaClient } from '@prisma/c
 // precisa mostrar "anunciado por X", então incluir isso aqui evita repetir
 // o `include` em cada método e evita uma segunda consulta no controller.
 const adWithOwnerArgs = {
-  include: { owner: { select: { id: true, name: true } } },
+  include: { owner: { select: { id: true, name: true, phone: true } } },
 } satisfies Prisma.AdDefaultArgs;
 
 export type AdWithOwner = Prisma.AdGetPayload<typeof adWithOwnerArgs>;

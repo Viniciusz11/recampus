@@ -8,6 +8,11 @@ const registerFormSchema = z
   .object({
     name: z.string().trim().min(2, 'Nome deve ter pelo menos 2 caracteres').max(100),
     email: z.string().trim().email('E-mail inválido'),
+    phone: z
+      .string()
+      .trim()
+      .transform((value) => value.replace(/\D/g, ''))
+      .pipe(z.string().regex(/^\d{10,11}$/, 'Informe um telefone válido com DDD')),
     password: z.string().min(8, 'Senha deve ter pelo menos 8 caracteres'),
     confirmPassword: z.string().min(1, 'Confirme sua senha'),
   })
@@ -46,6 +51,14 @@ export function RegisterForm({ onSubmit, isSubmitting = false }: RegisterFormPro
         placeholder="voce@universidade.edu"
         error={errors.email?.message}
         {...register('email')}
+      />
+      <Input
+        label="WhatsApp"
+        type="tel"
+        autoComplete="tel"
+        placeholder="(85) 99999-9999"
+        error={errors.phone?.message}
+        {...register('phone')}
       />
       <Input
         label="Senha"

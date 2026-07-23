@@ -27,7 +27,7 @@ export interface Ad {
   imageUrl: string;
   status: AdStatus;
   ownerId: string;
-  owner: { id: string; name: string };
+  owner: { id: string; name: string; phone: string | null };
   createdAt: string;
   updatedAt: string;
 }

@@ -30,6 +30,7 @@ export class AuthService {
       name: input.name,
       email: input.email,
       passwordHash,
+      phone: input.phone,
     });
 
     const tokens = await this.issueTokens(user.id, user.email);

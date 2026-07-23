@@ -1,4 +1,4 @@
-import { ArrowLeft, Pencil, Trash2 } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -13,6 +13,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { AD_TYPE_LABELS, CATEGORY_META } from '@/utils/adMeta';
 import { getErrorMessage } from '@/utils/errors';
 import { formatDate, formatPrice } from '@/utils/format';
+import { buildWhatsAppLink } from '@/utils/whatsapp';
 
 export function AdDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -100,6 +101,23 @@ export function AdDetailPage() {
         Anunciado por <span className="font-medium text-foreground">{ad.owner.name}</span> em{' '}
         {formatDate(ad.createdAt)}
       </div>
+
+      {!isOwner && ad.owner.phone && (
+        <a
+          href={buildWhatsAppLink(
+            ad.owner.phone,
+            `Olá, ${ad.owner.name}! Vi seu anúncio "${ad.title}" no ReCampus e tenho interesse.`,
+          )}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 block"
+        >
+          <Button className="w-full bg-[#25D366] text-white hover:bg-[#25D366]/90">
+            <MessageCircle className="h-4 w-4" aria-hidden="true" /> Falar com {ad.owner.name.split(' ')[0]} no
+            WhatsApp
+          </Button>
+        </a>
+      )}
 
       {isOwner && (
         <div className="mt-6 flex gap-3">

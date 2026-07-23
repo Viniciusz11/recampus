@@ -13,7 +13,7 @@ export function RegisterPage() {
   async function handleSubmit(values: RegisterFormValues): Promise<void> {
     setIsSubmitting(true);
     try {
-      await register(values.name, values.email, values.password);
+      await register(values.name, values.email, values.password, values.phone);
       toast.success('Conta criada! Bem-vindo(a) ao ReCampus.');
       navigate('/app', { replace: true });
     } catch (error) {

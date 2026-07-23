@@ -47,8 +47,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(loggedUser);
   }, []);
 
-  const register = useCallback(async (name: string, email: string, password: string) => {
-    const { user: newUser, accessToken } = await authService.register({ name, email, password });
+  const register = useCallback(async (name: string, email: string, password: string, phone: string) => {
+    const { user: newUser, accessToken } = await authService.register({ name, email, password, phone });
     setAccessToken(accessToken);
     setUser(newUser);
   }, []);

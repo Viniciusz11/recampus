@@ -106,21 +106,23 @@ async function main(): Promise<void> {
 
   const ana = await prisma.user.upsert({
     where: { email: 'ana@recampus.dev' },
-    update: {},
+    update: { phone: '85999990001' },
     create: {
       name: 'Ana Souza',
       email: 'ana@recampus.dev',
       passwordHash,
+      phone: '85999990001',
     },
   });
 
   const bruno = await prisma.user.upsert({
     where: { email: 'bruno@recampus.dev' },
-    update: {},
+    update: { phone: '85999990002' },
     create: {
       name: 'Bruno Lima',
       email: 'bruno@recampus.dev',
       passwordHash,
+      phone: '85999990002',
     },
   });
 

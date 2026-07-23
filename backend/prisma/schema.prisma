@@ -50,6 +50,12 @@ model User {
   name         String
   email        String   @unique
   passwordHash String
+  /// Só dígitos (DDD + número, sem +55) - normalizado no cadastro para
+  /// simplificar a montagem do link de WhatsApp (wa.me) sem parsing extra.
+  /// Nullable no banco porque é uma coluna nova numa tabela que já tinha
+  /// linhas; a obrigatoriedade real é imposta no registerSchema (mesmo
+  /// padrão de Ad.price: regra de negócio no app, não CHECK no banco).
+  phone        String?
   avatarUrl    String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
