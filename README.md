@@ -341,6 +341,24 @@ desenvolvimento — não um chat separado onde eu colava trechos de código, mas
 acesso direto ao terminal, ao sistema de arquivos e a um navegador headless (Playwright) pra
 testar o que ia sendo construído.
 
+### Controle do processo
+
+Não usei um prompt único pedindo "crie um marketplace completo" e aceitei o resultado pronto. O
+projeto avançou em **11 etapas obrigatórias** (arquitetura → estrutura de pastas → banco →
+backend → frontend → integração → PWA → Docker → README → refatoração → melhorias), e cada uma só
+começava depois que eu revisava a explicação das decisões da etapa anterior e aprovava
+explicitamente a próxima. Se uma decisão de arquitetura não fizesse sentido pra mim, o processo
+parava ali — não só no final, quando já seria tarde pra mudar algo estrutural.
+
+Depois que as 11 etapas terminaram, o projeto continuou sendo construído do mesmo jeito: cada
+funcionalidade nova (upload real de imagem, contato via WhatsApp, correção de navegação do menu)
+partiu de um pedido específico e isolado — nunca de um "adicione mais recursos" genérico — e foi
+testada e validada em produção, não só localmente, antes de eu considerar pronta e seguir pro
+próximo pedido. Também revisei partes do código por conta própria em vez de só confiar no que foi
+entregue: por exemplo, pedi uma análise do `schema.prisma` procurando problemas, o que revelou um
+campo (`avatarUrl`) que existia no banco mas nunca tinha sido implementado em lugar nenhum — uma
+inconsistência real que só apareceu porque eu fui atrás dela, não porque veio sinalizada de graça.
+
 ### Estratégia de engenharia de prompts
 
 Em vez de ir pedindo funcionalidade por funcionalidade, escrevi **um prompt de arquitetura único
